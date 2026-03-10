@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DP - Device Pairing & Integration</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%2338bdf8'>D</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #050e2d;
+      --deep: #0a1a4e;
+      --royal: #1338be;
+      --blue: #2563eb;
+      --sky: #38bdf8;
+      --cyan: #06d6f0;
+      --mint: #00f5c4;
+      --white: #f8faff;
+      --soft: #e8f0fe;
+      --muted: #94a3b8;
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.12);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0,245,196,0.1) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    section, nav, footer { position: relative; z-index: 1; }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 5%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(5,14,45,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: background .3s;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--sky), var(--mint));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .875rem;
+      font-weight: 500;
+      transition: color .2s;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-links a:hover { color: var(--sky); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--royal), var(--blue));
+      color: var(--white) !important;
+      padding: .45rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600 !important;
+    }
+
+    section { padding: 90px 5%; }
+
+    .section-tag {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: .8rem;
+    }
+
+    h1, h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--sky) 0%, var(--cyan) 50%, var(--mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+
+    .section-desc {
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      font-size: 1.05rem;
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      backdrop-filter: blur(10px);
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56,189,248,0.3);
+      box-shadow: 0 12px 40px rgba(37,99,235,0.15);
+    }
+
+    .card-icon {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      background: rgba(56,189,248,0.12);
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .card p { font-size: .9rem; color: var(--muted); line-height: 1.65; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+    .section-divider {
+      width: 60px; height: 3px;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      margin-bottom: 1.5rem;
+    }
+
+    .hero { min-height: 80vh; display: flex; align-items: center; padding-top: 100px; }
+
+    .section-alt {
+      background: linear-gradient(180deg, rgba(19,56,190,0.08) 0%, transparent 100%);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .device-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(56,189,248,0.12);
+      border: 1px solid rgba(56,189,248,0.3);
+      color: var(--sky);
+      padding: .5rem 1.2rem;
+      border-radius: 100px;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .device-badge::before {
+      content: '📱';
+      font-size: 1rem;
+    }
+
+    .flow-diagram {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .flow-step-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding: 1.2rem;
+      background: rgba(37,99,235,0.08);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 12px;
+      transition: all .25s;
+    }
+
+    .flow-step-card:hover {
+      background: rgba(37,99,235,0.15);
+      border-color: rgba(37,99,235,0.4);
+    }
+
+    .flow-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .flow-step-card h4 { 
+      font-family: 'Syne', sans-serif; 
+      font-size: 0.95rem; 
+      font-weight: 700; 
+      margin-bottom: 0.3rem;
+    }
+
+    .flow-step-card p { font-size: 0.85rem; color: var(--muted); }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .feature-list li {
+      padding: 0.5rem 0 0.5rem 1.8rem;
+      position: relative;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--mint);
+      font-weight: 700;
+    }
+
+    .device-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(6,214,240,0.08);
+      border: 1px solid rgba(6,214,240,0.2);
+      border-radius: 100px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--sky);
+      margin: 0.4rem 0.5rem 0.4rem 0;
+      transition: all .2s;
+    }
+
+    .device-chip:hover { 
+      background: rgba(6,214,240,0.15);
+      border-color: rgba(6,214,240,0.4);
+    }
+
+    .device-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .connectivity-box {
+      background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(6,214,240,0.05));
+      border: 1px solid rgba(37,99,235,0.25);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all .25s;
+    }
+
+    .connectivity-box:hover {
+      border-color: rgba(56,189,248,0.4);
+      background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(6,214,240,0.1));
+    }
+
+    .connectivity-box h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--sky);
+    }
+
+    .connectivity-box p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    footer {
+      background: rgba(5,14,45,0.95);
+      border-top: 1px solid var(--glass-border);
+      padding: 40px 5% 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo"> DP </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#pairing">Device Pairing</a></li>
+    <li><a href="#bluetooth">Bluetooth</a></li>
+    <li><a href="#wifi">WiFi</a></li>
+    <li><a href="#devices">Supported Devices</a></li>
+    <li><a href="bob.html">Main Platform</a></li>
+  </ul>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero reveal">
+  <div>
+    <div class="device-badge">Smart Device Integration</div>
+    <h1>Device Pairing<br><span>— Seamless Connectivity</span></h1>
+    <p class="section-desc">Connect smartphones, wearables, and smart home devices effortlessly. Support for Bluetooth, WiFi, and multi-device synchronization for comprehensive health monitoring.</p>
+  </div>
+</section>
+
+<!-- DEVICE PAIRING OVERVIEW -->
+<section id="pairing" class="section-alt">
+  <div class="section-tag">Core Functionality</div>
+  <div class="section-divider"></div>
+  <h2>Device Pairing Process</h2>
+  <p class="section-desc">Intuitive pairing mechanism enabling seamless connection between VIS platform and all your personal devices.</p>
+
+  <div class="flow-diagram reveal">
+    <div class="flow-step-card">
+      <div class="flow-num">1</div>
+      <div>
+        <h4>Device Discovery</h4>
+        <p>Automatic scanning detects available Bluetooth and WiFi devices within range. Real-time signal strength indicator helps position devices optimally.</p>
+      </div>
+    </div>
+
+    <div class="flow-step-card">
+      <div class="flow-num">2</div>
+      <div>
+        <h4>Authentication</h4>
+        <p>Secure pairing using PIN verification and SSL certificates. Mutual authentication ensures both device and platform are trusted entities.</p>
+      </div>
+    </div>
+
+    <div class="flow-step-card">
+      <div class="flow-num">3</div>
+      <div>
+        <h4>Data Synchronization</h4>
+        <p>Encrypted tunnel established between devices. Historical data imported from device firmware. Real-time streaming configured automatically.</p>
+      </div>
+    </div>
+
+    <div class="flow-step-card">
+      <div class="flow-num">4</div>
+      <div>
+        <h4>Continuous Connection</h4>
+        <p>Adaptive connection management maintains reliability. Auto-reconnect on temporary disconnection. Battery optimization reduces power consumption.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLUETOOTH CONNECTIVITY -->
+<section id="bluetooth">
+  <div class="section-tag">Wireless Protocol</div>
+  <div class="section-divider"></div>
+  <h2>Bluetooth Connectivity</h2>
+  <p class="section-desc">Low-energy Bluetooth technology for wearables and proximal device connections with minimal power consumption.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">📡</div>
+      <h3>Bluetooth Low Energy (BLE)</h3>
+      <p>Ultra-low power consumption ideal for wearable devices. Range up to 240 meters in open space. Automatic power management extends battery life to weeks or months.</p>
+      <ul class="feature-list">
+        <li>Version 5.3+ support with extended range</li>
+        <li>Mesh networking for multi-device relay</li>
+        <li>Background scanning capabilities</li>
+        <li>Nordic, Qualcomm, MediaTek chipsets</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">⌚</div>
+      <h3>Wearable Devices</h3>
+      <p>Seamless integration with smartwatches, fitness trackers, and medical-grade wearables. Real-time heart rate, sleep, and activity synchronization.</p>
+      <ul class="feature-list">
+        <li>Apple Watch, Fitbit, Garmin compatibility</li>
+        <li>Continuous health metric streaming</li>
+        <li>Firmware compatibility detection</li>
+        <li>Legacy device support</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔋</div>
+      <h3>Power Management</h3>
+      <p>Intelligent battery optimization reduces drain by 40%. Connection pooling minimizes authentication handshakes. Scheduled sync windows respect device power states.</p>
+      <ul class="feature-list">
+        <li>Deep sleep mode support</li>
+        <li>Dynamic interval adjustment</li>
+        <li>Adaptive bitrate transmission</li>
+        <li>Battery health monitoring</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🛡️</div>
+      <h3>Bluetooth Security</h3>
+      <p>Military-grade encryption for BLE communications. Device-level authentication prevents unauthorized connections. Pairing key derivation uses ECDH algorithm.</p>
+      <ul class="feature-list">
+        <li>AES-CCM encryption standard</li>
+        <li>Randomized MAC addresses</li>
+        <li>Replay attack protection</li>
+        <li>Out-of-band verification option</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WiFi CONNECTIVITY -->
+<section id="wifi" class="section-alt">
+  <div class="section-tag">Network Protocol</div>
+  <div class="section-divider"></div>
+  <h2>WiFi Network</h2>
+  <p class="section-desc">High-speed WiFi connectivity for tablets, smartphones, and smart home devices with advanced network management.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">📶</div>
+      <h3>WiFi 6E Support</h3>
+      <p>Latest WiFi 6E (802.11ax) standard for ultra-fast connections. Triple-band support: 2.4 GHz, 5 GHz, 6 GHz. Multi-SSID configuration for network flexibility.</p>
+      <ul class="feature-list">
+        <li>Speeds up to 1.2 Gbps</li>
+        <li>Lower latency (< 20ms)</li>
+        <li>OFDMA resource allocation</li>
+        <li>Backward compatibility with WiFi 5/4</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📱</div>
+      <h3>Smart Devices</h3>
+      <p>Support for smartphones, tablets, and smart home hubs. Dual-stack IPv4 and IPv6. Intelligent roaming between access points maintains connection quality.</p>
+      <ul class="feature-list">
+        <li>iOS and Android native integration</li>
+        <li>Windows and macOS support</li>
+        <li>Smart speaker compatibility</li>
+        <li>IoT hub centralization</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🏠</div>
+      <h3>Smart Home Devices</h3>
+      <p>Seamless integration with smart home ecosystem. Compatibility with Matter protocol and Thread networking. Centralized control via VIS platform dashboard.</p>
+      <ul class="feature-list">
+        <li>Temperature and humidity sensors</li>
+        <li>Motion detection devices</li>
+        <li>Smart lighting systems</li>
+        <li>Environmental air quality monitors</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔐</div>
+      <h3>WiFi Security</h3>
+      <p>Enterprise-grade WPA3 encryption for maximum protection. Certificate-based authentication and EAP-TLS protocol. Guest network isolation for visitor access.</p>
+      <ul class="feature-list">
+        <li>WPA3 Simultaneous Authentication of Equals</li>
+        <li>192-bit encryption for sensitive data</li>
+        <li>MAC address randomization</li>
+        <li>Network segmentation support</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORTED DEVICES -->
+<section id="devices">
+  <div class="section-tag">Device Ecosystem</div>
+  <div class="section-divider"></div>
+  <h2>Supported Smart Devices</h2>
+  <p class="section-desc">Comprehensive compatibility with hundreds of devices across multiple manufacturers and categories.</p>
+
+  <div class="grid-3">
+    <div class="connectivity-box reveal" style="grid-column: 1;">
+      <h4>📱 Smartphones & Tablets</h4>
+      <p><strong>iOS:</strong> iPhone 12+, iPad Pro/Air/Mini</p>
+      <p><strong>Android:</strong> Pixel 6+, Samsung Galaxy S21+, OnePlus 9+</p>
+      <p><strong>Connectivity:</strong> Bluetooth 5.1+, WiFi 6</p>
+    </div>
+
+    <div class="connectivity-box reveal" style="grid-column: 2;">
+      <h4>⌚ Wearable Devices</h4>
+      <p><strong>Smartwatches:</strong> Apple Watch Series 6+, Samsung Galaxy Watch 4+</p>
+      <p><strong>Fitness:</strong> Fitbit Charge 5, Garmin Fenix 6+, Whoop Band</p>
+      <p><strong>Medical:</strong> CardioID, iRhythm Zio</p>
+    </div>
+
+    <div class="connectivity-box reveal" style="grid-column: 3;">
+      <h4>🏠 Smart Home Hubs</h4>
+      <p><strong>Hubs:</strong> Apple HomePod Mini, Amazon Echo, Google Home</p>
+      <p><strong>Protocol:</strong> Matter, Thread, Zigbee, Z-Wave</p>
+      <p><strong>Function:</strong> Central control and automation</p>
+    </div>
+
+    <div class="connectivity-box reveal" style="grid-column: 1;">
+      <h4>🌡️ Environmental Sensors</h4>
+      <p><strong>Temperature:</strong> Eve Room, Sensibo Sky</p>
+      <p><strong>Air Quality:</strong> Awair, FOOBOT</p>
+      <p><strong>Humidity:</strong> Eve Degree Hygrometer</p>
+    </div>
+
+    <div class="connectivity-box reveal" style="grid-column: 2;">
+      <h4>🔌 Wireless Power Control Devices</h4>
+      <p><strong>Outlets:</strong> Remote control using a mobile application</p>
+      <p><strong>Switches:</strong> Remote control through smartphone apps</p>
+      <p><strong>Use Case:</strong> Devices can be controlled using voice assistants like Alexa or Google Assista</p>
+    </div>
+
+    <div class="connectivity-box reveal" style="grid-column: 3;">
+      <h4>📊 Health Monitors</h4>
+      <p><strong>Blood Pressure:</strong> Withings BPM, Omron</p>
+      <p><strong>Scale:</strong> Withings Body Scale</p>
+      <p><strong>Pulse:</strong> Checkme, Viatom</p>
+    </div>
+  </div>
+</section>
+
+<!-- PAIRING WORKFLOW -->
+<section id="workflow" class="section-alt">
+  <div class="section-tag">User Experience</div>
+  <div class="section-divider"></div>
+  <h2>Pairing Workflow Examples</h2>
+  <p class="section-desc">Step-by-step pairing procedures for common device types on the VIS platform.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">⌚</div>
+      <h3>Pairing a Smartwatch</h3>
+      <p><strong>Duration:</strong> 2-3 minutes</p>
+      <ul class="feature-list">
+        <li>Enable Bluetooth on both devices</li>
+        <li>Open VIS app → Add Device → Wearables</li>
+        <li>Select device from discovery list</li>
+        <li>Confirm PIN on watch display</li>
+        <li>Grant health data permissions</li>
+        <li>Complete: Real-time data syncing active</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📱</div>
+      <h3>Pairing a Smartphone</h3>
+      <p><strong>Duration:</strong> 1-2 minutes</p>
+      <ul class="feature-list">
+        <li>Download VIS mobile app from store</li>
+        <li>Create/login to VIS account</li>
+        <li>Grant device permissions (location, health)</li>
+        <li>App automatically registers as primary device</li>
+        <li>Connect secondary devices via main app</li>
+        <li>Complete: Phone serves as hub</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🏠</div>
+      <h3>Pairing Smart Home Devices</h3>
+      <p><strong>Duration:</strong> 3-5 minutes</p>
+      <ul class="feature-list">
+        <li>Ensure device is powered and nearby</li>
+        <li>VIS App → Smart Home → Add Device</li>
+        <li>Select device type from catalog</li>
+        <li>Connect to home WiFi network</li>
+        <li>Assign location/room in app</li>
+        <li>Complete: Device available in dashboard</li>
+      </ul>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🌡️</div>
+      <h3>Pairing Health Monitors</h3>
+      <p><strong>Duration:</strong> 2-4 minutes</p>
+      <ul class="feature-list">
+        <li>Initialize device with batteries/charging</li>
+        <li>Connect to home WiFi (if applicable)</li>
+        <li>VIS App → Health Devices → Pair</li>
+        <li>Select manufacturer and model</li>
+        <li>Follow device-specific verification</li>
+        <li>Complete: Readings sync automatically</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MULTI-DEVICE SYNC -->
+<section id="sync">
+  <div class="section-tag">Advanced Features</div>
+  <div class="section-divider"></div>
+  <h2>Multi-Device Synchronization</h2>
+  <p class="section-desc">Intelligent syncing across multiple paired devices ensures data consistency and real-time updates.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">🔄</div>
+      <h3>Conflict Resolution</h3>
+      <p>When multiple devices report conflicting data, VIS uses timestamp priority and sensor accuracy scores to determine authoritative values. Manual override available for users.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📊</div>
+      <h3>Data Aggregation</h3>
+      <p>Multiple sensor inputs combined intelligently. Redundancy checks ensure no data loss. Statistical weighting prioritizes more reliable sensors for critical metrics.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">⚡</div>
+      <h3>Real-Time Updates</h3>
+      <p>Push notifications for significant health events. Dashboard refreshes in milliseconds. Heartbeat ping every 30 seconds ensures connection freshness.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🧠</div>
+      <h3>Intelligent Prioritization</h3>
+      <p>Context-aware device selection based on availability and accuracy. Medical-grade devices prioritized over consumer devices for critical data. Automatic fallback chains.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 VIS - Device Integration Platform. Connectivity Simplified. <a href="bob.html" style="color: var(--sky); text-decoration: none;">Back to Main Platform</a></p>
+</footer>
+
+<script>
+  // Scroll reveal animation
+  const reveals = document.querySelectorAll('.reveal');
+  reveals.forEach(el => el.classList.add('visible'));
+</script>
+</body>
+</html>

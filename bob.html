@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> VIS – AI-Driven Personalized Health Monitoring</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%2338bdf8'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050e2d;
+    --deep: #0a1a4e;
+    --royal: #1338be;
+    --blue: #2563eb;
+    --sky: #38bdf8;
+    --cyan: #06d6f0;
+    --mint: #00f5c4;
+    --white: #f8faff;
+    --soft: #e8f0fe;
+    --muted: #94a3b8;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── BACKGROUND MESH ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(19,56,190,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 20%, rgba(6,214,240,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0,245,196,0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  section, nav, footer { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5,14,45,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    transition: background .3s;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .875rem;
+    font-weight: 500;
+    transition: color .2s;
+    letter-spacing: 0.3px;
+  }
+
+  .nav-links a:hover { color: var(--sky); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--royal), var(--blue));
+    color: var(--white) !important;
+    padding: .45rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600 !important;
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--sky);
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 5% 60px;
+    gap: 4rem;
+  }
+
+  .hero-text { flex: 1; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(56,189,248,0.12);
+    border: 1px solid rgba(56,189,248,0.3);
+    color: var(--sky);
+    padding: .4rem 1rem;
+    border-radius: 100px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--mint);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:.5; transform:scale(1.3); }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--sky) 0%, var(--cyan) 50%, var(--mint) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+  }
+
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: #fff;
+    padding: .85rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 30px rgba(37,99,235,0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(37,99,235,0.55);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    padding: .85rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+
+  .btn-outline:hover {
+    background: var(--glass);
+    border-color: var(--sky);
+  }
+
+  /* ── HERO VISUAL ── */
+  .hero-visual {
+    flex: 0 0 420px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .watch-orb {
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 30% 30%, rgba(37,99,235,0.4), rgba(6,214,240,0.15), transparent 70%);
+    border: 1px solid rgba(56,189,248,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: orb-float 6s ease-in-out infinite;
+  }
+
+  @keyframes orb-float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-18px); }
+  }
+
+  .watch-orb::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(56,189,248,0.1);
+    animation: orb-float 6s ease-in-out infinite reverse;
+  }
+
+  .watch-orb::after {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    border: 1px dashed rgba(0,245,196,0.1);
+  }
+
+  .watch-icon {
+    font-size: 6rem;
+    filter: drop-shadow(0 0 30px rgba(56,189,248,0.6));
+  }
+
+  /* heartbeat ring */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--sky);
+    opacity: 0;
+    animation: ring-expand 3s ease-out infinite;
+  }
+  .ring:nth-child(2) { width: 280px; height: 280px; animation-delay: 0s; }
+  .ring:nth-child(3) { width: 360px; height: 360px; animation-delay: 1s; }
+  .ring:nth-child(4) { width: 440px; height: 440px; animation-delay: 2s; }
+
+  @keyframes ring-expand {
+    0% { transform: scale(.6); opacity: .5; }
+    100% { transform: scale(1.1); opacity: 0; }
+  }
+
+  /* floating stats */
+  .stat-chip {
+    position: absolute;
+    background: rgba(5,14,45,0.9);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    font-size: .8rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .stat-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .stat-chip strong { font-family: 'Syne', sans-serif; font-size: 1rem; }
+
+  .chip-hr { top: 15%; right: -30px; }
+  .chip-hr .dot { background: #ef4444; animation: pulse 1.5s infinite; }
+
+  .chip-steps { bottom: 20%; left: -40px; }
+  .chip-steps .dot { background: var(--mint); }
+
+  .chip-stress { top: 50%; right: -20px; }
+  .chip-stress .dot { background: var(--sky); }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 90px 5%; }
+
+  .section-tag {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: .8rem;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    max-width: 600px;
+    margin-bottom: 3rem;
+    font-size: 1.05rem;
+  }
+
+  .section-header { margin-bottom: 3rem; }
+
+  /* ── GLASS CARD ── */
+  .card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.8rem;
+    backdrop-filter: blur(10px);
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56,189,248,0.3);
+    box-shadow: 0 12px 40px rgba(37,99,235,0.15);
+  }
+
+  .card-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+
+  .card p { font-size: .9rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+  /* ── SECTION ALT BG ── */
+  .section-alt {
+    background: linear-gradient(180deg, rgba(19,56,190,0.08) 0%, transparent 100%);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  /* ── USER LAYER ── */
+  #user .card-icon { background: rgba(56,189,248,0.12); }
+
+  /* ── DEVICE LAYER ── */
+  .device-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    margin-top: 2rem;
+  }
+
+  .flow-step {
+    flex: 1;
+    min-width: 160px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem 1.2rem;
+    text-align: center;
+    position: relative;
+    transition: transform .25s, border-color .25s;
+  }
+
+  .flow-step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56,189,248,0.4);
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--sky);
+    z-index: 2;
+    background: var(--navy);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--glass-border);
+  }
+
+  .flow-step + .flow-step { margin-left: 24px; }
+
+  .flow-icon { font-size: 2rem; margin-bottom: .75rem; }
+  .flow-step h4 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
+  .flow-step p { font-size: .8rem; color: var(--muted); }
+
+  /* sensor chips */
+  .sensor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 2.5rem;
+  }
+
+  .sensor-chip {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(6,214,240,0.08);
+    border: 1px solid rgba(6,214,240,0.2);
+    border-radius: 100px;
+    padding: .5rem 1.1rem;
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--sky);
+    transition: background .2s;
+  }
+
+  .sensor-chip:hover { background: rgba(6,214,240,0.15); }
+
+  /* ── DATA PROCESSING ── */
+  .process-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    max-width: 800px;
+  }
+
+  .process-flow::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--blue), var(--cyan), var(--mint));
+    z-index: 0;
+  }
+
+  .process-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem 1.5rem 1.5rem 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .process-num {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    position: relative;
+  }
+
+  .process-body {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1.3rem 1.5rem;
+    flex: 1;
+    transition: border-color .25s;
+  }
+
+  .process-body:hover { border-color: rgba(56,189,248,0.3); }
+  .process-body h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+  .process-body p { font-size: .9rem; color: var(--muted); }
+
+  .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .75rem; }
+  .tag {
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    color: var(--sky);
+    padding: .2rem .7rem;
+    border-radius: 100px;
+    font-size: .75rem;
+    font-weight: 500;
+  }
+
+  /* ── AI LAYER ── */
+  #ai { background: linear-gradient(135deg, rgba(10,26,78,0.6) 0%, rgba(5,14,45,0.3) 100%); }
+
+  .ai-card {
+    background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(6,214,240,0.05));
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s;
+  }
+
+  .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .ai-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(37,99,235,0.2);
+  }
+
+  .ai-card .ai-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+  .ai-card h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; }
+  .ai-card .model-label {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: .25rem .8rem;
+    border-radius: 100px;
+    margin-bottom: .8rem;
+  }
+
+  .ai-card p { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+
+  .ai-card-1::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+  .ai-card-1 .model-label { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+
+  .ai-card-2::before { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+  .ai-card-2 .model-label { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+
+  .ai-card-3::before { background: linear-gradient(90deg, var(--sky), var(--cyan)); }
+  .ai-card-3 .model-label { background: rgba(56,189,248,.15); color: var(--sky); border: 1px solid rgba(56,189,248,.3); }
+
+  .ai-card-4::before { background: linear-gradient(90deg, #e879f9, #c084fc); }
+  .ai-card-4 .model-label { background: rgba(232,121,249,.15); color: #e879f9; border: 1px solid rgba(232,121,249,.3); }
+
+  /* parallel badge */
+  .parallel-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    margin-bottom: 2.5rem;
+    background: rgba(6,214,240,0.08);
+    border: 1px solid rgba(6,214,240,0.2);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    max-width: 500px;
+  }
+
+  .parallel-badge span { font-size: 1.3rem; }
+  .parallel-badge p { font-size: .9rem; color: var(--sky); font-weight: 500; }
+
+  /* ── DECISION LAYER ── */
+  .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+
+  .alert-box {
+    border-radius: 14px;
+    padding: 1.3rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid;
+    transition: transform .2s;
+  }
+
+  .alert-box:hover { transform: translateX(4px); }
+
+  .alert-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .alert-box h4 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .25rem; }
+  .alert-box p { font-size: .85rem; opacity: .75; }
+
+  .alert-red { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); color: #fca5a5; }
+  .alert-yellow { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); color: #fcd34d; }
+  .alert-green { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); color: #86efac; }
+  .alert-blue { background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.25); color: var(--sky); }
+
+  .rec-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+
+  .rec-card:hover { border-color: rgba(56,189,248,0.3); }
+  .rec-icon { font-size: 1.5rem; }
+  .rec-card h4 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .15rem; }
+  .rec-card p { font-size: .82rem; color: var(--muted); }
+
+  /* ── APP LAYER ── */
+  .dashboard-mock {
+    background: rgba(5,14,45,0.8);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 2.5rem;
+    overflow: hidden;
+  }
+
+  .dash-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .dash-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+    padding: .3rem .9rem;
+    border-radius: 100px;
+    font-size: .78rem;
+    font-weight: 600;
+  }
+
+  .live-pill::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 1.5s infinite;
+  }
+
+  .dash-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric-tile {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .metric-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: .3rem; }
+  .metric-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .metric-unit { font-size: .72rem; color: var(--muted); }
+  .metric-status { font-size: .72rem; margin-top: .25rem; font-weight: 600; }
+
+  .dash-charts { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+
+  .chart-box {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .chart-label { font-size: .78rem; color: var(--muted); margin-bottom: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* SVG chart */
+  .ecg-line {
+    fill: none;
+    stroke: url(#ecgGrad);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: ecg-scroll 4s linear infinite;
+  }
+
+  @keyframes ecg-scroll {
+    from { stroke-dashoffset: 400; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  .activity-bar { transition: height .5s; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: rgba(5,14,45,0.95);
+    border-top: 1px solid var(--glass-border);
+    padding: 60px 5% 30px;
+  }
+
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+
+  .footer-brand .nav-logo { display: block; font-size: 1.6rem; margin-bottom: .8rem; }
+  .footer-brand p { font-size: .9rem; color: var(--muted); line-height: 1.7; }
+
+  .footer-col h5 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: 1.2rem; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: .6rem; }
+  .footer-col a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+  .footer-col a:hover { color: var(--sky); }
+
+  .socials { display: flex; gap: .8rem; margin-top: 1.2rem; }
+  .social-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+
+  .social-btn:hover { background: rgba(56,189,248,0.1); border-color: var(--sky); }
+
+  .footer-bottom {
+    border-top: 1px solid var(--glass-border);
+    padding-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .85rem;
+    color: var(--muted);
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .65s ease, transform .65s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* stagger */
+  .reveal:nth-child(2) { transition-delay: .1s; }
+  .reveal:nth-child(3) { transition-delay: .2s; }
+  .reveal:nth-child(4) { transition-delay: .3s; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    width: 60px; height: 3px;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .dash-metrics { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .hero-visual { flex: 0 0 320px; }
+    .watch-orb { width: 280px; height: 280px; }
+    .chip-hr { right: -10px; }
+    .chip-steps { left: -10px; }
+  }
+
+  @media (max-width: 900px) {
+    #hero { flex-direction: column; text-align: center; padding-top: 120px; }
+    .hero-sub { margin: 0 auto 2.5rem; }
+    .hero-btns { justify-content: center; }
+    .hero-visual { flex: none; width: 100%; max-width: 360px; }
+    .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .decision-grid { grid-template-columns: 1fr; }
+    .dash-charts { grid-template-columns: 1fr; }
+    .parallel-badge { max-width: 100%; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 4%; }
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 70px; left: 0; right: 0;
+      background: rgba(5,14,45,0.98);
+      padding: 1.5rem 5%;
+      gap: 1.2rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .hamburger { display: flex; }
+    .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr; }
+    .device-flow { flex-direction: column; }
+    .flow-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -26px; transform: translateX(50%); }
+    .flow-step + .flow-step { margin-left: 0; margin-top: 32px; }
+    .dash-metrics { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: .75rem; text-align: center; }
+    .chip-hr, .chip-steps, .chip-stress { display: none; }
+  }
+</style>
+</head>
+<script src="HR.js"></script>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo"> VIS </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#user">User Layer</a></li>
+    <li><a href="#device">Device</a></li>
+    <li><a href="#data">Processing</a></li>
+    <li><a href="#ai">AI Models</a></li>
+    <li><a href="#decision">Decision</a></li>
+    <li><a href="#app">Dashboard</a></li>
+    <li><a href="PERMI.html">Permissions</a></li>
+    <li><a href="Notifi.html">Notifications</a></li>
+    <li><a href="profil.html">Profile</a></li>
+    <li><a href="login.html" class="nav-cta">Login</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-text reveal">
+    <h1>Smart Health<br>Monitoring<br><span>— VIS </span></h1>
+    <p class="hero-sub">Intelligent Real-Time Health Analysis Powered by AI. Combining wearable sensors, machine learning, and predictive analytics to keep you ahead of your health.</p>
+    <div class="hero-btns">
+      <a href="#user" class="btn-primary">Get Started</a>
+      <a href="#ai" class="btn-outline">View Architecture</a>
+    </div>
+  </div>
+
+  <div class="hero-visual reveal">
+    <img src="https://img.freepik.com/premium-photo/smart-healthcare-monitoring-system-images_861346-26682.jpg?w=1800"
+    width="600px" 
+    height="600px" 
+     alt="Health Monitoring">
+    </div>
+</section>
+
+<!-- ── 1. USER LAYER ── -->
+<section id="user" class="section-alt">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 01</div>
+    <div class="section-divider"></div>
+    <h2>User Layer</h2>
+    <p class="section-desc" personalized profile </p>
+  </div>
+
+  <div class="grid-3">
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(56,189,248,0.12)">🔐</div>
+      <h3> Login & Registration </h3>
+      <br></br>
+      <a href="login.html" class="btn-outline">Login</a>
+    </div>
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(0,245,196,0.1)">👤</div>
+      <h3>Profile Setup</h3>
+      <br></br>
+      <a href="profil.html" class="btn-outline">View Profile</a>
+    </div>
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(99,102,241,0.12)">🎛️</div>
+      <h3>Permission Management</h3>
+      <br></br>
+      <a href="PERMI.html" class="btn-outline">Manage Permissions</a>
+    </div>
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(245,158,11,0.1)">🔔</div>
+      <h3>Notification Preferences</h3>
+      <br></br> 
+      <a href="Notifi.html" class="btn-outline">Manage Notifications</a>
+    </div>
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(239,68,68,0.1)">🛡️</div>
+      <h3>Data Privacy Controls</h3>
+      <br></br>
+      <a href="DPC.html" class="btn-outline">Manage Privacy Controls</a>
+      <p></p>
+    </div>
+    <div class="card reveal">
+      <div class="card-icon" style="background:rgba(34,197,94,0.1)">🔗</div>
+      <h3>Device Pairing</h3>
+      <br></br>
+      <a href="DP.html" class="btn-outline">Manage Pairing</a>
+      <p></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2. DEVICE INTEGRATION ── -->
+<section id="device">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 02</div>
+    <div class="section-divider"></div>
+    <h2>Device Integration Layer</h2>
+    <p class="section-desc">Real-time multi-sensor data acquisition from wearable hardware with intelligent signal conditioning and streaming pipelines. Includes advanced monitoring modules for heart rate, activity tracking, and biometric sensor fusion.</p>
+  </div>
+
+  <div class="device-flow reveal">
+    <div class="flow-step">
+      <div class="flow-icon">📡</div>
+      <h4>Bluetooth Pairing</h4>
+      <p>Google Pixel Watch via BLE 5.0</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">⚙️</div>
+      <h4>Sensor Init</h4>
+      <p>Calibration & health checks</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">📊</div>
+      <h4>Data Acquisition</h4>
+      <p>50 Hz continuous sampling</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">🔄</div>
+      <h4>Stream Buffer</h4>
+      <p>Real-time ring buffer queue</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">📤</div>
+      <h4>Data Upload</h4>
+      <p>Encrypted WebSocket push</p>
+    </div>
+  </div>
+
+  <div class="sensor-grid reveal" style="margin-top:2.5rem">
+    <div class="sensor-chip">❤️ Heart Rate (PPG)</div>
+    <div class="sensor-chip">🌡️ Body Temperature</div>
+    <div class="sensor-chip">🏃 Accelerometer (Steps)</div>
+    <div class="sensor-chip">📷 Facial Image Capture</div>
+  </div>
+
+  <!-- Heart Rate Monitoring Module -->
+  <div class="grid-2" style="margin-top: 3rem;">
+    <div class="card reveal">
+      <div class="card-icon">❤️</div>
+      <h3>Heart Rate Monitoring (HR Module)</h3>
+      <p>Advanced real-time HR analysis engine with clinical-grade monitoring. Detects bradycardia (<60 bpm), tachycardia (>100 bpm), and critical conditions requiring immediate attention.</p>
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted); line-height: 1.6;">
+        <strong>Capabilities:</strong><br>
+        • Normal Range: 60-100 bpm (Athletes: 40-60)<br>
+        • Heart Rate Variability (HRV) calculation<br>
+        • Anomaly detection & spike alerts<br>
+        • Fitness level assessment
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📊</div>
+      <h3>Multi-Device Fusion</h3>
+      <p>Intelligent aggregation from Apple Watch, Fitbit, Garmin, and other wearables. Conflict resolution using timestamp priority and sensor accuracy scoring.</p>
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted); line-height: 1.6;">
+        <strong>Features:</strong><br>
+        • Device-adaptive thresholds<br>
+        • Signal quality tracking (0-1)<br>
+        • Activity-aware analysis<br>
+        • Auto-reconnect on disconnection
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">⚠️</div>
+      <h3>Alert & Recommendation Engine</h3>
+      <p>Real-time health alerts with personalized recommendations. Critical alerts trigger emergency notifications for severe bradycardia/tachycardia.</p>
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted); line-height: 1.6;">
+        <strong>Alert Levels:</strong><br>
+        • Critical: <40 or >140 bpm<br>
+        • Warning: Out-of-range at rest<br>
+        • Normal: Healthy range<br>
+        • Exercise mode: Activity-based
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🎯</div>
+      <h3>Target Heart Rate Zones</h3>
+      <p>Age-adjusted exercise zones using Karvonen formula. Calculates optimal training intensities for moderate, vigorous, and high-intensity workouts.</p>
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted); line-height: 1.6;">
+        <strong>Training Zones:</strong><br>
+        • Moderate: 50-70% max HR<br>
+        • Vigorous: 70-85% max HR<br>
+        • High: 85-100% max HR<br>
+        • Max HR = 220 - age
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. DATA PROCESSING ── -->
+<section id="data" class="section-alt">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 03</div>
+    <div class="section-divider"></div>
+    <h2>Data Processing Layer</h2>
+    <p class="section-desc">Raw sensor signals are transformed through a four-stage pipeline — validated, cleaned, enriched with features, and normalized — before feeding into AI models.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+    <div class="process-flow reveal">
+      <div class="process-step">
+        <div class="process-num" style="background:linear-gradient(135deg,#1338be,#2563eb);color:#fff">01</div>
+        <div class="process-body">
+          <h4>Data Validation</h4>
+          <p>Schema checks, range validation, and completeness verification ensure only well-formed sensor packets enter the pipeline.</p>
+          <div class="tags"><span class="tag">Schema Check</span><span class="tag">Range Guard</span></div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num" style="background:linear-gradient(135deg,#0891b2,#06d6f0);color:#fff">02</div>
+        <div class="process-body">
+          <h4>Data Cleaning</h4>
+          <p>Bandpass filtering removes motion artefacts. Median filters suppress PPG noise. Missing samples interpolated via cubic spline.</p>
+          <div class="tags"><span class="tag">Noise Removal</span><span class="tag">Artefact Filter</span><span class="tag">Interpolation</span></div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num" style="background:linear-gradient(135deg,#065f46,#00f5c4);color:#fff">03</div>
+        <div class="process-body">
+          <h4>Feature Extraction</h4>
+          <p>MFCC coefficients for speech emotion, Facial Action Units for fatigue, HRV spectral features, and step cadence metrics are extracted in parallel.</p>
+          <div class="tags"><span class="tag">MFCC</span><span class="tag">FAU Mapping</span><span class="tag">HRV Features</span></div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff">04</div>
+        <div class="process-body">
+          <h4>Normalization & Scaling</h4>
+          <p>Z-score normalization aligns features across modalities. Min-max scaling constrains values for neural network inputs.</p>
+          <div class="tags"><span class="tag">Z-Score</span><span class="tag">Min-Max</span><span class="tag">PCA</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="padding-top:1rem">
+      <div class="card" style="margin-bottom:1rem">
+        <div style="font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem">Pipeline Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--cyan)">50Hz</div>
+            <div style="font-size:.8rem;color:var(--muted)">Sampling Rate</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--mint)">&lt;80ms</div>
+            <div style="font-size:.8rem;color:var(--muted)">Pipeline Latency</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--sky)">4</div>
+            <div style="font-size:.8rem;color:var(--muted)">Processing Stages</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#a78bfa">128</div>
+            <div style="font-size:.8rem;color:var(--muted)">Feature Dimensions</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem">Supported Modalities</h3>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div style="display:flex;align-items:center;gap:.75rem;font-size:.88rem">
+            <span>🔊</span> <span><strong>Audio</strong> — MFCC, Chroma, STFT features</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;font-size:.88rem">
+            <span>👁️</span> <span><strong>Image</strong> — CNN feature maps, FAU scoring</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;font-size:.88rem">
+            <span>📈</span> <span><strong>Time-series</strong> — Statistical + spectral features</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;font-size:.88rem">
+            <span>🏃</span> <span><strong>Motion</strong> — Step count, gait, activity energy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. AI LAYER ── -->
+<section id="ai">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 04</div>
+    <div class="section-divider"></div>
+    <h2>AI Intelligence Layer</h2>
+    <p class="section-desc">Four specialized machine learning models run in parallel, each optimized for a distinct health-analysis domain.</p>
+  </div>
+
+  <div class="parallel-badge reveal">
+    <span>⚡</span>
+    <p>All four models execute simultaneously in parallel threads for sub-100ms total inference time</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="ai-card ai-card-1 reveal">
+      <div class="ai-icon">🌳</div>
+      <div class="model-label">Random Forest</div>
+      <h3>Activity Classification</h3>
+      <p>Classifies physical activities — walking, running, resting, cycling — from accelerometer and gyroscope features with 97.4% accuracy across 12 activity classes.</p>
+    </div>
+    <div class="ai-card ai-card-2 reveal">
+      <div class="ai-icon">🫀</div>
+      <div class="model-label">SVM</div>
+      <h3>Cardiovascular Risk</h3>
+      <p>RBF-kernel Support Vector Machine predicts short-term cardiac risk from HRV, SpO₂, and blood pressure trend features with clinical-grade precision.</p>
+    </div>
+    <div class="ai-card ai-card-3 reveal">
+      <div class="ai-icon">🎙️</div>
+      <div class="model-label">CNN — Speech</div>
+      <h3>Emotion & Stress Detection</h3>
+      <p>1D Convolutional Neural Network trained on MFCC audio features detects emotional state — stress, calm, anxiety, fatigue — from 2-second voice samples.</p>
+    </div>
+    <div class="ai-card ai-card-4 reveal">
+      <div class="ai-icon">👁️</div>
+      <div class="model-label">CNN — Image</div>
+      <h3>Fatigue Detection</h3>
+      <p>Vision-based CNN analyzes facial landmarks and eye aspect ratio from front-camera frames to detect micro-expressions of fatigue and drowsiness in real time.</p>
+    </div>
+  </div>
+
+  <div class="card reveal" style="margin-top:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+    <div style="flex:1;min-width:200px">
+      <div class="section-tag">Model Fusion</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:.5rem">Ensemble Decision Fusion</h3>
+      <p style="font-size:.9rem;color:var(--muted)">Outputs from all four models are combined using a weighted ensemble strategy. Confidence scores from each classifier are fused with patient history priors to produce a unified health risk score.</p>
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap">
+      <div style="text-align:center;padding:1rem 1.5rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px">
+        <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#4ade80">97.4%</div>
+        <div style="font-size:.78rem;color:var(--muted)">Activity Accuracy</div>
+      </div>
+      <div style="text-align:center;padding:1rem 1.5rem;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px">
+        <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:#fcd34d">94.1%</div>
+        <div style="font-size:.78rem;color:var(--muted)">Cardiac Precision</div>
+      </div>
+      <div style="text-align:center;padding:1rem 1.5rem;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:12px">
+        <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--sky)">91.8%</div>
+        <div style="font-size:.78rem;color:var(--muted)">Emotion F1-Score</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5. DECISION ENGINE ── -->
+<section id="decision" class="section-alt">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 05</div>
+    <div class="section-divider"></div>
+    <h2>Decision & Recommendation Engine</h2>
+    <p class="section-desc">AI model outputs are evaluated against dynamic thresholds and patient baselines to generate clinically-relevant, actionable recommendations.</p>
+  </div>
+
+  <div class="decision-grid">
+    <div class="reveal">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">⚠️ Health Risk Alerts</h3>
+      <div class="alert-box alert-red">
+        <div class="alert-icon">🚨</div>
+        <div>
+          <h4>Critical Medical Alert</h4>
+          <p>Heart rate exceeds 180 BPM or SpO₂ drops below 90% — emergency notification dispatched to contacts and nearby services.</p>
+        </div>
+      </div>
+      <div class="alert-box alert-yellow">
+        <div class="alert-icon">⚡</div>
+        <div>
+          <h4>Elevated Cardiovascular Risk</h4>
+          <p>SVM confidence &gt;75% for high cardiac risk — recommends rest, hydration, and optional GP consultation within 24 hours.</p>
+        </div>
+      </div>
+      <div class="alert-box alert-blue">
+        <div class="alert-icon">😰</div>
+        <div>
+          <h4>Stress & Emotion Warning</h4>
+          <p>Sustained high-stress emotion detected over 30-minute window — triggers breathing exercises and mindfulness notification.</p>
+        </div>
+      </div>
+      <div class="alert-box alert-green">
+        <div class="alert-icon">✅</div>
+        <div>
+          <h4>All Vitals Normal</h4>
+          <p>All metrics within baseline thresholds — daily health score calculated and displayed on dashboard with achievement badges.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">💡 Personalized Recommendations</h3>
+      <div class="rec-card">
+        <div class="rec-icon">🏃‍♂️</div>
+        <div>
+          <h4>Exercise Suggestions</h4>
+          <p>Tailored workout plans based on current activity level, heart rate recovery, and daily step goals.</p>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-icon">😴</div>
+        <div>
+          <h4>Rest Recommendations</h4>
+          <p>Smart sleep scheduling and recovery windows inferred from fatigue detection and HRV trends.</p>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-icon">🧘</div>
+        <div>
+          <h4>Stress Management</h4>
+          <p>Guided breathing, meditation prompts, and journaling reminders triggered by emotion model outputs.</p>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-icon">🩺</div>
+        <div>
+          <h4>Medical Consultation</h4>
+          <p>Automated referral suggestions with a shareable health report PDF when critical thresholds are breached.</p>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-icon">💧</div>
+        <div>
+          <h4>Hydration & Nutrition</h4>
+          <p>Water intake reminders and macro-nutrient suggestions calibrated to activity energy expenditure.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6. APPLICATION LAYER ── -->
+<section id="app">
+  <div class="section-header reveal">
+    <div class="section-tag">Layer 06</div>
+    <div class="section-divider"></div>
+    <h2>Application Layer</h2>
+    <p class="section-desc">A live, adaptive health dashboard synchronized to a Node.js backend via WebSocket, delivering real-time metrics, trend charts, and AI insights in one view.</p>
+  </div>
+
+  <div class="grid-3 reveal" style="margin-bottom:2rem">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(56,189,248,0.1)">🔄</div>
+      <h3>Real-Time Sync</h3>
+      <p>WebSocket connection to Node.js backend ensures sub-100ms data refresh. Automatic reconnect on network interruption with offline caching.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(0,245,196,0.1)">📱</div>
+      <h3>Cross-Platform UI</h3>
+      <p>React Native mobile app with responsive web dashboard. Consistent experience across iOS, Android, and browser without data loss.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(99,102,241,0.12)">☁️</div>
+      <h3>Cloud Sync & History</h3>
+      <p>Full health history stored in MongoDB Atlas. Weekly trend reports generated automatically with PDF export for medical consultations.</p>
+    </div>
+  </div>
+
+  <!-- Dashboard Mockup -->
+  <div class="dashboard-mock reveal">
+    <div class="dash-topbar">
+      <div>
+        <div class="dash-title">Health Dashboard — Alex Johnson</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem">Friday, March 06, 2026 &nbsp;·&nbsp; Last updated 2s ago</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <div class="live-pill">LIVE</div>
+        <div style="font-size:1.3rem">🔔</div>
+      </div>
+    </div>
+
+    <div class="dash-metrics">
+      <div class="metric-tile">
+        <div class="metric-label">Heart Rate</div>
+        <div class="metric-val" style="color:#f87171">72</div>
+        <div class="metric-unit">BPM</div>
+        <div class="metric-status" style="color:#4ade80">● Normal</div>
+      </div>
+      <div class="metric-tile">
+        <div class="metric-label">SpO₂</div>
+        <div class="metric-val" style="color:var(--sky)">98</div>
+        <div class="metric-unit">%</div>
+        <div class="metric-status" style="color:#4ade80">● Optimal</div>
+      </div>
+      <div class="metric-tile">
+        <div class="metric-label">Steps</div>
+        <div class="metric-val" style="color:var(--mint)">8,432</div>
+        <div class="metric-unit">/ 10,000</div>
+        <div class="metric-status" style="color:#fcd34d">● On Track</div>
+      </div>
+      <div class="metric-tile">
+        <div class="metric-label">Stress</div>
+        <div class="metric-val" style="color:#a78bfa">Low</div>
+        <div class="metric-unit">Index</div>
+        <div class="metric-status" style="color:#4ade80">● Relaxed</div>
+      </div>
+    </div>
+
+    <div class="dash-charts">
+      <div class="chart-box">
+        <div class="chart-label">❤️ Heart Rate — Last 60 min</div>
+        <svg viewBox="0 0 400 80" width="100%" height="80" style="overflow:visible">
+          <defs>
+            <linearGradient id="ecgGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#2563eb"/>
+              <stop offset="50%" stop-color="#06d6f0"/>
+              <stop offset="100%" stop-color="#00f5c4"/>
+            </linearGradient>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2563eb" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,55 C20,55 25,55 30,55 L35,30 L40,65 L42,20 L46,65 L50,55 C70,55 90,50 110,52 C130,54 135,48 155,50 L160,28 L165,62 L167,18 L171,62 L175,50 C195,50 215,52 235,48 L240,30 L245,60 L247,15 L251,60 L255,48 C275,48 295,50 315,46 L320,28 L325,58 L327,16 L331,58 L335,46 C355,46 375,48 400,44" class="ecg-line" stroke-dasharray="400"/>
+          <path d="M0,55 C20,55 25,55 30,55 L35,30 L40,65 L42,20 L46,65 L50,55 C70,55 90,50 110,52 C130,54 135,48 155,50 L160,28 L165,62 L167,18 L171,62 L175,50 C195,50 215,52 235,48 L240,30 L245,60 L247,15 L251,60 L255,48 C275,48 295,50 315,46 L320,28 L325,58 L327,16 L331,58 L335,46 C355,46 375,48 400,44 L400,80 L0,80 Z" fill="url(#areaGrad)"/>
+        </svg>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-label">🏃 Activity — Today</div>
+        <svg viewBox="0 0 160 80" width="100%" height="80">
+          <defs>
+            <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#06d6f0"/>
+              <stop offset="100%" stop-color="#2563eb"/>
+            </linearGradient>
+          </defs>
+          <rect x="5"  y="50" width="16" height="30" rx="4" fill="url(#barGrad)" opacity=".5"/>
+          <rect x="25" y="35" width="16" height="45" rx="4" fill="url(#barGrad)" opacity=".6"/>
+          <rect x="45" y="20" width="16" height="60" rx="4" fill="url(#barGrad)" opacity=".8"/>
+          <rect x="65" y="30" width="16" height="50" rx="4" fill="url(#barGrad)" opacity=".7"/>
+          <rect x="85" y="10" width="16" height="70" rx="4" fill="url(#barGrad)" opacity="1"/>
+          <rect x="105" y="40" width="16" height="40" rx="4" fill="url(#barGrad)" opacity=".55"/>
+          <rect x="125" y="55" width="16" height="25" rx="4" fill="url(#barGrad)" opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px;background:rgba(0,245,196,0.06);border:1px solid rgba(0,245,196,0.15);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.5rem">🏆</span>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700">Daily Goal: 84%</div>
+          <div style="font-size:.78rem;color:var(--muted)">1,568 steps remaining</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.5rem">🧘</span>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700">Stress: Relaxed</div>
+          <div style="font-size:.78rem;color:var(--muted)">CNN confidence 92%</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.5rem">😴</span>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700">Fatigue: None</div>
+          <div style="font-size:.78rem;color:var(--muted)">Eye AR ratio 0.32</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.5rem">🫀</span>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700">Cardiac Risk: Low</div>
+          <div style="font-size:.78rem;color:var(--muted)">SVM score 0.12</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo">VIS</span>
+      <p>AI-Driven Mobile App for Personalized Health Monitoring. Empowering individuals with intelligent, real-time health insights backed by cutting-edge machine learning.</p>
+      <div class="socials">
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">gh</a>
+        <a href="#" class="social-btn">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>About .-. </h5>
+      <ul>
+        <li><a href="#">Our Mission</a></li>
+        <li><a href="#">Research Team</a></li>
+        <li><a href="#">Publications</a></li>
+        <li><a href="#">Open Source</a></li>
+        <li><a href="#">Roadmap</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">HIPAA Compliance</a></li>
+        <li><a href="#">Data Retention</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col" id="contact-info">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="mailto:hello@vis.health">hello@vis.health</a></li>
+        <li><a href="#">Research Inquiries</a></li>
+        <li><a href="#">Partnership</a></li>
+        <li><a href="#">Press Kit</a></li>
+        <li><a href="#">Bug Reports</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 VIS Health Technologies. All rights reserved.</div>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#" style="color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">Privacy</a>
+      <a href="#" style="color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">Terms</a>
+      <a href="#" style="color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">HIPAA</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── MOBILE NAV ──
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // close nav on link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // ── NAVBAR SCROLL TINT ──
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(5,14,45,0.97)';
+    } else {
+      nav.style.background = 'rgba(5,14,45,0.85)';
+    }
+  });
+
+  // ── HEART RATE API INTEGRATION ──
+  const API_URL = 'http://localhost:5000/api';
+  const hrEl = document.querySelector('.chip-hr strong');
+  let apiConnected = false;
+  
+  // Fetch real HR data from Python backend
+  async function updateHeartRate() {
+    try {
+      const response = await fetch(`${API_URL}/hr/latest`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      
+      const data = await response.json();
+      apiConnected = true;
+      
+      if (data.bpm && data.bpm !== 0 && hrEl) {
+        hrEl.textContent = data.bpm + ' BPM';
+        
+        // Update visual feedback based on alert level
+        const chip = document.querySelector('.chip-hr');
+        if (chip) {
+          if (data.alert_level === 'critical') {
+            chip.style.borderColor = 'rgba(239,68,68,0.6)';
+            chip.style.opacity = '1';
+          } else if (data.alert_level === 'high') {
+            chip.style.borderColor = 'rgba(245,158,11,0.5)';
+            chip.style.opacity = '0.9';
+          } else {
+            chip.style.borderColor = 'rgba(56,189,248,0.3)';
+            chip.style.opacity = '1';
+          }
+        }
+      }
+    } catch (error) {
+      // API not available - use demo mode
+      if (!apiConnected && hrEl) {
+        let bpm = parseInt(hrEl.textContent) || 72;
+        bpm += Math.floor(Math.random() * 5) - 2;
+        bpm = Math.max(60, Math.min(100, bpm));
+        hrEl.textContent = bpm + ' BPM';
+      }
+    }
+  }
+  
+  // Update HR every 2 seconds
+  updateHeartRate();
+  setInterval(updateHeartRate, 2000);
+
+  // ── STEP COUNTER ──
+  const stepEl = document.querySelector('.chip-steps strong');
+  let steps = 8432;
+  setInterval(() => {
+    steps += Math.floor(Math.random() * 4);
+    if (stepEl) stepEl.textContent = steps.toLocaleString();
+  }, 3000);
+
+  // ── SMOOTH ACTIVE NAV ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--sky)' : '';
+    });
+  });
+</script>
+</body>
+</html>

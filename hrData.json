@@ -1,0 +1,48 @@
+{
+  "modules": [
+    {
+      "icon": "❤️",
+      "title": "Heart Rate Monitoring (HR Module)",
+      "description": "Advanced real-time HR analysis engine with clinical-grade monitoring.",
+      "features": [
+        "Normal Range: 60-100 bpm",
+        "Heart Rate Variability (HRV)",
+        "Spike detection alerts",
+        "Fitness assessment"
+      ]
+    },
+    {
+      "icon": "📊",
+      "title": "Multi-Device Fusion",
+      "description": "Aggregation from Apple Watch, Fitbit and Garmin devices.",
+      "features": [
+        "Device adaptive thresholds",
+        "Signal quality tracking",
+        "Activity-aware analysis",
+        "Auto reconnect"
+      ]
+    },
+    {
+      "icon": "⚠️",
+      "title": "Alert & Recommendation Engine",
+      "description": "Health alerts with emergency notifications.",
+      "features": [
+        "Critical: <40 or >140 bpm",
+        "Warning: out of range",
+        "Normal monitoring",
+        "Exercise mode"
+      ]
+    },
+    {
+      "icon": "🎯",
+      "title": "Target Heart Rate Zones",
+      "description": "Exercise zones calculated using age.",
+      "features": [
+        "Moderate: 50-70%",
+        "Vigorous: 70-85%",
+        "High: 85-100%",
+        "Max HR = 220 - age"
+      ]
+    }
+  ]
+}

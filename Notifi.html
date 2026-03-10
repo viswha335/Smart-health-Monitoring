@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> VIS – Notifications</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%2338bdf8'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050e2d;
+    --deep: #0a1a4e;
+    --royal: #1338be;
+    --blue: #2563eb;
+    --sky: #38bdf8;
+    --cyan: #06d6f0;
+    --mint: #00f5c4;
+    --white: #f8faff;
+    --soft: #e8f0fe;
+    --muted: #94a3b8;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── BACKGROUND MESH ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(37,99,235,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 120% 80% at 50% 50%, rgba(6,214,240,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0,245,196,0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(0deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5,14,45,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+  }
+
+  .nav-logo:hover { opacity: 0.8; }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .875rem;
+    font-weight: 500;
+    transition: color .2s;
+  }
+
+  .nav-links a:hover { color: var(--sky); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--royal), var(--blue));
+    color: var(--white) !important;
+    padding: .45rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600 !important;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 100px 5% 60px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  /* ── NOTIFICATION DEMO ── */
+  .demo-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--sky);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .btn {
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all .3s;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #22c55e, #4ade80);
+    color: var(--white);
+    box-shadow: 0 8px 30px rgba(34,197,94,0.3);
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(34,197,94,0.4);
+  }
+
+  .btn-error {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+    color: var(--white);
+    box-shadow: 0 8px 30px rgba(239,68,68,0.3);
+  }
+
+  .btn-error:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(239,68,68,0.4);
+  }
+
+  .btn-info {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 8px 30px rgba(37,99,235,0.3);
+  }
+
+  .btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(37,99,235,0.4);
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #fcd34d);
+    color: #1f2937;
+    box-shadow: 0 8px 30px rgba(245,158,11,0.3);
+  }
+
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(245,158,11,0.4);
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sky);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    transition: color .2s;
+  }
+
+  .back-link:hover {
+    color: var(--mint);
+  }
+
+  /* ── NOTIFICATION CONTAINER ── */
+  .notification-container {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+  }
+
+  /* ── NOTIFICATION TOAST ── */
+  .notification {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.4s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+  }
+
+  .notification.removing {
+    animation: slideOut 0.4s ease forwards;
+  }
+
+  .notification-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .notification-content {
+    flex: 1;
+  }
+
+  .notification-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .notification-message {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .notification-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity .2s;
+  }
+
+  .notification-close:hover {
+    opacity: 1;
+  }
+
+  /* ── NOTIFICATION TYPES ── */
+  .notification.success {
+    border-color: rgba(34,197,94,0.3);
+    background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(74,222,128,0.05));
+  }
+
+  .notification.success .notification-icon {
+    color: #4ade80;
+  }
+
+  .notification.error {
+    border-color: rgba(239,68,68,0.3);
+    background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(248,113,113,0.05));
+  }
+
+  .notification.error .notification-icon {
+    color: #f87171;
+  }
+
+  .notification.info {
+    border-color: rgba(56,189,248,0.3);
+    background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(6,214,240,0.05));
+  }
+
+  .notification.info .notification-icon {
+    color: var(--sky);
+  }
+
+  .notification.warning {
+    border-color: rgba(245,158,11,0.3);
+    background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(252,211,77,0.05));
+  }
+
+  .notification.warning .notification-icon {
+    color: #fcd34d;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 0 0 14px 0;
+    animation: progressBar 3s linear forwards;
+  }
+
+  @keyframes progressBar {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  .notification.success .notification-progress {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+  }
+
+  .notification.error .notification-progress {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+  }
+
+  .notification.info .notification-progress {
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+  }
+
+  .notification.warning .notification-progress {
+    background: linear-gradient(90deg, #f59e0b, #fcd34d);
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(6,214,240,0.06));
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 2.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .info-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--sky);
+    margin-bottom: 1rem;
+  }
+
+  .info-box p {
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .code-block {
+    background: rgba(5,14,45,0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--sky);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    main {
+      padding: 100px 4% 40px;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .notification-container {
+      right: 10px;
+      left: 10px;
+      max-width: none;
+    }
+
+    .button-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo" onclick="window.location.href='bob.html'"> VIS</div>
+    <ul class="nav-links">
+      <li><a href="bob.html">Home</a></li>
+      <li><a href="profil.html">Profile</a></li>
+      <li><a href="PERMI.html">Permissions</a></li>
+      <li><a href="login.html" class="nav-cta">Login</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <a href="bob.html" class="back-link">← Back to Home</a>
+
+    <div class="page-header">
+      <h1>Notification Center</h1>
+      <p>Click below to trigger different notification types</p>
+    </div>
+
+    <!-- SUCCESS NOTIFICATIONS -->
+    <div class="demo-section">
+      <div class="section-title">
+        <span>✓</span> Success Notifications
+      </div>
+      <div class="button-grid">
+        <button class="btn btn-success" onclick="showNotification('success', 'Profile Saved', 'Your health profile has been updated successfully!')">
+          Profile Saved
+        </button>
+        <button class="btn btn-success" onclick="showNotification('success', 'Permissions Granted', 'Device access permissions have been enabled.')">
+          Permissions Granted
+        </button>
+        <button class="btn btn-success" onclick="showNotification('success', 'Login Successful', 'Welcome back to SHMA!')">
+          Login Successful
+        </button>
+        <button class="btn btn-success" onclick="showNotification('success', 'Data Synced', 'Your health data has been synced with the cloud.')">
+          Data Synced
+        </button>
+      </div>
+    </div>
+
+    <!-- ERROR NOTIFICATIONS -->
+    <div class="demo-section">
+      <div class="section-title">
+        <span>✕</span> Error Notifications
+      </div>
+      <div class="button-grid">
+        <button class="btn btn-error" onclick="showNotification('error', 'Invalid Credentials', 'The email or password you entered is incorrect.')">
+          Invalid Credentials
+        </button>
+        <button class="btn btn-error" onclick="showNotification('error', 'Permission Denied', 'You need to grant device access permissions first.')">
+          Permission Denied
+        </button>
+        <button class="btn btn-error" onclick="showNotification('error', 'Network Error', 'Failed to sync data. Please check your connection.')">
+          Network Error
+        </button>
+        <button class="btn btn-error" onclick="showNotification('error', 'File Too Large', 'The selected file exceeds the maximum size of 5MB.')">
+          File Too Large
+        </button>
+      </div>
+    </div>
+
+    <!-- INFO NOTIFICATIONS -->
+    <div class="demo-section">
+      <div class="section-title">
+        <span>ℹ</span> Info Notifications
+      </div>
+      <div class="button-grid">
+        <button class="btn btn-info" onclick="showNotification('info', 'Update Available', 'A new version of SHMA is available. Update now for better features.')">
+          Update Available
+        </button>
+        <button class="btn btn-info" onclick="showNotification('info', 'New Message', 'Your doctor has sent you a message.')">
+          New Message
+        </button>
+        <button class="btn btn-info" onclick="showNotification('info', 'Data Backup', 'Your health data will be backed up in 5 minutes.')">
+          Data Backup
+        </button>
+        <button class="btn btn-info" onclick="showNotification('info', 'Feature Tip', 'Tip: You can export your health data as PDF for medical records.')">
+          Feature Tip
+        </button>
+      </div>
+    </div>
+
+    <!-- WARNING NOTIFICATIONS -->
+    <div class="demo-section">
+      <div class="section-title">
+        <span>⚠</span> Warning Notifications
+      </div>
+      <div class="button-grid">
+        <button class="btn btn-warning" onclick="showNotification('warning', 'High Heart Rate', 'Your heart rate is elevated. Please relax and monitor.')">
+          High Heart Rate
+        </button>
+        <button class="btn btn-warning" onclick="showNotification('warning', 'Low Oxygen', 'Your SpO2 is below normal. Seek medical attention if it persists.')">
+          Low Oxygen
+        </button>
+        <button class="btn btn-warning" onclick="showNotification('warning', 'Battery Low', 'Your wearable device battery is at 15%.')">
+          Battery Low
+        </button>
+        <button class="btn btn-warning" onclick="showNotification('warning', 'Medication Due', 'Time to take your next dose of medication.')">
+          Medication Due
+        </button>
+      </div>
+    </div>
+
+    <!-- INFORMATION BOX -->
+    <div class="info-box">
+      <h3>📋 How to Use Notifications</h3>
+      <p>These notifications are integrated throughout the SHMA application. They automatically appear when:</p>
+      <p>✓ You save your profile information<br>
+         ✓ You update permission settings<br>
+         ✓ You log in or create an account<br>
+         ✓ Health alerts are triggered<br>
+         ✓ System updates occur</p>
+      <p><strong>Auto-dismiss:</strong> Notifications automatically disappear after 3 seconds.</p>
+      <p><strong>Manual close:</strong> Click the × button to dismiss immediately.</p>
+      
+      <div class="code-block">
+// Show a notification from any page:<br>
+showNotification('success', 'Title', 'Message');<br>
+<br>
+// Types: 'success', 'error', 'info', 'warning'
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- NOTIFICATION CONTAINER -->
+<div class="notification-container" id="notificationContainer"></div>
+
+<script>
+  // ── NOTIFICATION SYSTEM ──
+  function showNotification(type = 'info', title = 'Notification', message = '', duration = 3000) {
+    const container = document.getElementById('notificationContainer');
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.style.position = 'relative';
+    
+    const icons = {
+      success: '✓',
+      error: '✕',
+      info: 'ℹ',
+      warning: '⚠'
+    };
+    
+    notification.innerHTML = `
+      <div class="notification-icon">${icons[type] || 'ℹ'}</div>
+      <div class="notification-content">
+        <div class="notification-title">${title}</div>
+        <div class="notification-message">${message}</div>
+      </div>
+      <button class="notification-close" onclick="this.closest('.notification').remove()">×</button>
+      <div class="notification-progress"></div>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Auto-dismiss
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.add('removing');
+        setTimeout(() => notification.remove(), 400);
+      }
+    }, duration);
+  }
+
+  // ── GLOBAL NOTIFICATION FUNCTION ──
+  window.showNotification = showNotification;
+
+  // Example: Show welcome notification on load
+  window.addEventListener('load', () => {
+    showNotification('info', '👋 Welcome', 'Explore the notification system by clicking the buttons above.');
+  });
+</script>
+
+</body>
+</html>

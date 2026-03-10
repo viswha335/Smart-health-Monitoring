@@ -1,0 +1,48 @@
+{
+  "modules": [
+    {
+      "icon": "❤️",
+      "title": "Heart Rate Monitoring (HR Module)",
+      "description": "Advanced real-time HR analysis engine with clinical-grade monitoring. Detects bradycardia (<60 bpm), tachycardia (>100 bpm), and critical conditions requiring immediate attention.",
+      "features": [
+        "Normal Range: 60-100 bpm (Athletes: 40-60)",
+        "Heart Rate Variability (HRV) calculation",
+        "Anomaly detection & spike alerts",
+        "Fitness level assessment"
+      ]
+    },
+    {
+      "icon": "📊",
+      "title": "Multi-Device Fusion",
+      "description": "Intelligent aggregation from Apple Watch, Fitbit, Garmin, and other wearables.",
+      "features": [
+        "Device-adaptive thresholds",
+        "Signal quality tracking (0-1)",
+        "Activity-aware analysis",
+        "Auto-reconnect on disconnection"
+      ]
+    },
+    {
+      "icon": "⚠️",
+      "title": "Alert & Recommendation Engine",
+      "description": "Real-time health alerts with personalized recommendations.",
+      "features": [
+        "Critical: <40 or >140 bpm",
+        "Warning: Out-of-range at rest",
+        "Normal: Healthy range",
+        "Exercise mode: Activity-based"
+      ]
+    },
+    {
+      "icon": "🎯",
+      "title": "Target Heart Rate Zones",
+      "description": "Age-adjusted exercise zones using Karvonen formula.",
+      "features": [
+        "Moderate: 50-70% max HR",
+        "Vigorous: 70-85% max HR",
+        "High: 85-100% max HR",
+        "Max HR = 220 - age"
+      ]
+    }
+  ]
+}

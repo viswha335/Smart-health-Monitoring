@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> VIS – User Health Profile</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%2338bdf8'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050e2d;
+    --deep: #0a1a4e;
+    --royal: #1338be;
+    --blue: #2563eb;
+    --sky: #38bdf8;
+    --cyan: #06d6f0;
+    --mint: #00f5c4;
+    --white: #f8faff;
+    --soft: #e8f0fe;
+    --muted: #94a3b8;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── BACKGROUND MESH ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(37,99,235,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 120% 80% at 50% 50%, rgba(6,214,240,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0,245,196,0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(0deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5,14,45,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+  }
+
+  .nav-logo:hover { opacity: 0.8; }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .875rem;
+    font-weight: 500;
+    transition: color .2s;
+  }
+
+  .nav-links a:hover { color: var(--sky); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--royal), var(--blue));
+    color: var(--white) !important;
+    padding: .45rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600 !important;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 100px 5% 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  /* ── PROFILE DASHBOARD ── */
+  .profile-dashboard {
+    background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(6,214,240,0.06));
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(37,99,235,0.2);
+  }
+
+  .dashboard-title-icon {
+    font-size: 2rem;
+    background: rgba(56,189,248,0.15);
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-title-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--sky);
+  }
+
+  .dashboard-title-text p {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .dashboard-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-stat {
+    background: rgba(5,14,45,0.6);
+    border: 1px solid rgba(56,189,248,0.15);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all .2s;
+  }
+
+  .dashboard-stat:hover {
+    background: rgba(5,14,45,0.8);
+    border-color: rgba(56,189,248,0.3);
+    transform: translateY(-2px);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-unit {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .dashboard-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .info-item {
+    background: rgba(5,14,45,0.5);
+    border: 1px solid rgba(6,214,240,0.15);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .info-item-left h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .info-item-left p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .info-item-icon {
+    font-size: 1.8rem;
+    opacity: 0.7;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state p {
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── PROFILE SECTIONS ── */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .profile-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: transform .3s, box-shadow .3s;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(37,99,235,0.15);
+  }
+
+  .profile-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--sky);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+  }
+
+  /* ── FORM GROUP ── */
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--white);
+    font-size: 0.9rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    transition: all .2s;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    background: rgba(37,99,235,0.1);
+    border-color: var(--sky);
+    box-shadow: 0 0 12px rgba(37,99,235,0.2);
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: var(--muted);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  /* ── BMI DISPLAY ── */
+  .bmi-display {
+    background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(6,214,240,0.05));
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .bmi-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+  }
+
+  .bmi-status {
+    font-size: 0.95rem;
+    color: var(--sky);
+    font-weight: 600;
+  }
+
+  /* ── ITEMS LIST ── */
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .item-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all .2s;
+  }
+
+  .item-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(56,189,248,0.4);
+  }
+
+  .item-info h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--white);
+  }
+
+  .item-info p {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-small {
+    padding: 0.5rem 1rem;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all .2s;
+  }
+
+  .btn-small:hover {
+    background: rgba(239,68,68,0.25);
+    border-color: rgba(239,68,68,0.5);
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 30px rgba(37,99,235,0.4);
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(37,99,235,0.55);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .btn-secondary:hover {
+    background: var(--glass);
+    border-color: var(--sky);
+  }
+
+  /* ── SUCCESS MESSAGE ── */
+  .alert {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: none;
+    font-weight: 500;
+  }
+
+  .alert.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+  }
+
+  .alert-success {
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 0.3rem;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 0.8rem;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all .2s;
+    font-size: 0.9rem;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sky);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    transition: color .2s;
+  }
+
+  .back-link:hover {
+    color: var(--mint);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    main {
+      padding: 100px 4% 40px;
+    }
+
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+  }
+
+  /* ── NOTIFICATION CONTAINER ── */
+  .notification-container {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+  }
+
+  /* ── NOTIFICATION TOAST ── */
+  .notification {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.4s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+  }
+
+  .notification.removing {
+    animation: slideOut 0.4s ease forwards;
+  }
+
+  .notification-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .notification-content {
+    flex: 1;
+  }
+
+  .notification-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .notification-message {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .notification-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity .2s;
+  }
+
+  .notification-close:hover {
+    opacity: 1;
+  }
+
+  .notification.success {
+    border-color: rgba(34,197,94,0.3);
+    background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(74,222,128,0.05));
+  }
+
+  .notification.success .notification-icon {
+    color: #4ade80;
+  }
+
+  .notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 0 0 14px 0;
+    animation: progressBar 3s linear forwards;
+  }
+
+  @keyframes progressBar {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  .notification.success .notification-progress {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo" onclick="window.location.href='bob.html'">VIS</div>
+    <ul class="nav-links">
+      <li><a href="bob.html">Home</a></li>
+      <li><a href="#" class="nav-cta">Profile</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <a href="bob.html" class="back-link">← Back to Home</a>
+
+    <div class="page-header">
+      <h1>Health Profile</h1>
+      <p>Manage your comprehensive health information for personalized AI analysis</p>
+    </div>
+
+    <!-- PROFILE DASHBOARD -->
+    <div class="profile-dashboard" id="profileDashboard">
+      <div class="dashboard-header">
+        <div class="dashboard-title-icon">📊</div>
+        <div class="dashboard-title-text">
+          <h3>Your Health Profile Summary</h3>
+          <p>Overview of your saved health information</p>
+        </div>
+      </div>
+
+      <div id="dashboardContent">
+        <div class="empty-state">
+          <p>👋 Start by filling out your basic information below to see your health summary</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASIC INFORMATION -->
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h2><span class="card-icon">👤</span>Basic Information</h2>
+        <form id="basicForm" onsubmit="saveBasicInfo(event)">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="John Doe" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input type="number" id="age" min="1" max="150" placeholder="30" required>
+            </div>
+            <div class="form-group">
+              <label for="gender">Gender</label>
+              <select id="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="john@example.com" required>
+          </div>
+
+          <button type="submit" class="btn-primary">Save Basic Info</button>
+        </form>
+      </div>
+
+      <!-- PHYSICAL METRICS -->
+      <div class="profile-card">
+        <h2><span class="card-icon">⚖️</span>Physical Metrics</h2>
+        <form id="metricsForm" onsubmit="saveMetrics(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="weight">Weight (kg)</label>
+              <input type="number" id="weight" step="0.1" min="1" placeholder="75" oninput="calculateBMI()">
+            </div>
+            <div class="form-group">
+              <label for="height">Height (cm)</label>
+              <input type="number" id="height" min="1" placeholder="180" oninput="calculateBMI()">
+            </div>
+          </div>
+
+          <div class="bmi-display">
+            <div class="bmi-value" id="bmiValue">-</div>
+            <div class="bmi-status" id="bmiStatus">Fill weight and height</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bloodType">Blood Type</label>
+              <select id="bloodType">
+                <option value="">Select Blood Type</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="bloodPressure">Blood Pressure (systolic/diastolic)</label>
+              <input type="text" id="bloodPressure" placeholder="120/80">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Save Metrics</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MEDICAL INFORMATION -->
+    <div class="profile-card">
+      <h2><span class="card-icon">🏥</span>Medical History & Conditions</h2>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('chronicTab')">Chronic Conditions</button>
+        <button class="tab-btn" onclick="switchTab('medicationsTab')">Medications</button>
+        <button class="tab-btn" onclick="switchTab('historyTab')">Medical History</button>
+      </div>
+
+      <!-- CHRONIC CONDITIONS TAB -->
+      <div id="chronicTab" class="tab-content active">
+        <form onsubmit="addChronicCondition(event)">
+          <div class="form-group">
+            <label for="chronicInput">Add Chronic Condition</label>
+            <input type="text" id="chronicInput" placeholder="e.g., Diabetes Type 2, Hypertension, Asthma">
+          </div>
+          <button type="submit" class="btn-primary">Add Condition</button>
+        </form>
+
+        <div id="chronicList" class="items-list" style="margin-top: 1.5rem;"></div>
+      </div>
+
+      <!-- MEDICATIONS TAB -->
+      <div id="medicationsTab" class="tab-content">
+        <form onsubmit="addMedication(event)">
+          <div class="form-group">
+            <label for="medicationName">Medication Name</label>
+            <input type="text" id="medicationName" placeholder="e.g., Metformin 500mg">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="medicationDosage">Dosage</label>
+              <input type="text" id="medicationDosage" placeholder="e.g., 1 tablet">
+            </div>
+            <div class="form-group">
+              <label for="medicationFrequency">Frequency</label>
+              <select id="medicationFrequency">
+                <option value="">Select Frequency</option>
+                <option value="Once daily">Once daily</option>
+                <option value="Twice daily">Twice daily</option>
+                <option value="Three times daily">Three times daily</option>
+                <option value="As needed">As needed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="medicationReason">Reason for Taking</label>
+            <input type="text" id="medicationReason" placeholder="e.g., Blood sugar control">
+          </div>
+
+          <button type="submit" class="btn-primary">Add Medication</button>
+        </form>
+
+        <div id="medicationList" class="items-list" style="margin-top: 1.5rem;"></div>
+      </div>
+
+      <!-- MEDICAL HISTORY TAB -->
+      <div id="historyTab" class="tab-content">
+        <form onsubmit="addHistoryItem(event)">
+          <div class="form-group">
+            <label for="historyType">Type of Event</label>
+            <select id="historyType">
+              <option value="">Select Type</option>
+              <option value="Surgery">Surgery</option>
+              <option value="Hospitalization">Hospitalization</option>
+              <option value="Diagnosis">Diagnosis</option>
+              <option value="Vaccination">Vaccination</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="historyDate">Date</label>
+              <input type="date" id="historyDate">
+            </div>
+            <div class="form-group">
+              <label for="historyDescription">Description</label>
+              <input type="text" id="historyDescription" placeholder="Brief description">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Add History Item</button>
+        </form>
+
+        <div id="historyList" class="items-list" style="margin-top: 1.5rem;"></div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+      <button class="btn-secondary" onclick="exportData()">📥 Export Health Data</button>
+    </div>
+  </main>
+</div>
+
+<!-- NOTIFICATION CONTAINER -->
+<div class="notification-container" id="notificationContainer"></div>
+
+<script>
+  // ── NOTIFICATION SYSTEM ──
+  function showNotification(type = 'info', title = 'Notification', message = '', duration = 3000) {
+    const container = document.getElementById('notificationContainer');
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.style.position = 'relative';
+    
+    const icons = {
+      success: '✓',
+      error: '✕',
+      info: 'ℹ',
+      warning: '⚠'
+    };
+    
+    notification.innerHTML = `
+      <div class="notification-icon">${icons[type] || 'ℹ'}</div>
+      <div class="notification-content">
+        <div class="notification-title">${title}</div>
+        <div class="notification-message">${message}</div>
+      </div>
+      <button class="notification-close" onclick="this.closest('.notification').remove()">×</button>
+      <div class="notification-progress"></div>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Auto-dismiss
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.add('removing');
+        setTimeout(() => notification.remove(), 400);
+      }
+    }, duration);
+  }
+
+  window.showNotification = showNotification;
+  // ── LOAD DATA ON PAGE LOAD ──
+  window.addEventListener('load', () => {
+    loadAllData();
+  });
+
+  // ── SAVE BASIC INFO ──
+  function saveBasicInfo(e) {
+    e.preventDefault();
+    const data = {
+      fullName: document.getElementById('fullName').value,
+      age: document.getElementById('age').value,
+      gender: document.getElementById('gender').value,
+      email: document.getElementById('email').value
+    };
+    localStorage.setItem('basicInfo', JSON.stringify(data));
+    renderDashboard();
+    showAlert();
+  }
+
+  // ── SAVE METRICS ──
+  function saveMetrics(e) {
+    e.preventDefault();
+    const data = {
+      weight: document.getElementById('weight').value,
+      height: document.getElementById('height').value,
+      bloodType: document.getElementById('bloodType').value,
+      bloodPressure: document.getElementById('bloodPressure').value
+    };
+    localStorage.setItem('physicalMetrics', JSON.stringify(data));
+    renderDashboard();
+    showAlert();
+  }
+
+  // ── CALCULATE BMI ──
+  function calculateBMI() {
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value) / 100;
+
+    if (weight > 0 && height > 0) {
+      const bmi = (weight / (height * height)).toFixed(1);
+      document.getElementById('bmiValue').textContent = bmi;
+
+      let status = '';
+      if (bmi < 18.5) status = 'Underweight';
+      else if (bmi < 25) status = 'Normal Weight';
+      else if (bmi < 30) status = 'Overweight';
+      else status = 'Obese';
+
+      document.getElementById('bmiStatus').textContent = `${status} (BMI: ${bmi})`;
+    }
+  }
+
+  // ── CHRONIC CONDITIONS ──
+  function addChronicCondition(e) {
+    e.preventDefault();
+    const input = document.getElementById('chronicInput').value.trim();
+    if (!input) return;
+
+    let conditions = JSON.parse(localStorage.getItem('chronicConditions')) || [];
+    conditions.push({
+      id: Date.now(),
+      name: input,
+      date: new Date().toLocaleDateString()
+    });
+    localStorage.setItem('chronicConditions', JSON.stringify(conditions));
+    document.getElementById('chronicInput').value = '';
+    renderChronicConditions();
+    renderDashboard();
+    showAlert();
+  }
+
+  function removeCondition(id) {
+    let conditions = JSON.parse(localStorage.getItem('chronicConditions')) || [];
+    conditions = conditions.filter(c => c.id !== id);
+    localStorage.setItem('chronicConditions', JSON.stringify(conditions));
+    renderChronicConditions();
+    renderDashboard();
+  }
+
+  function renderChronicConditions() {
+    const conditions = JSON.parse(localStorage.getItem('chronicConditions')) || [];
+    const list = document.getElementById('chronicList');
+    list.innerHTML = '';
+
+    if (conditions.length === 0) {
+      list.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 1rem;">No chronic conditions added yet</p>';
+      return;
+    }
+
+    conditions.forEach(condition => {
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.innerHTML = `
+        <div class="item-info">
+          <h4>🏥 ${condition.name}</h4>
+          <p>Added: ${condition.date}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn-small" onclick="removeCondition(${condition.id})">Remove</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  // ── MEDICATIONS ──
+  function addMedication(e) {
+    e.preventDefault();
+    const name = document.getElementById('medicationName').value.trim();
+    const dosage = document.getElementById('medicationDosage').value.trim();
+    const frequency = document.getElementById('medicationFrequency').value;
+    const reason = document.getElementById('medicationReason').value.trim();
+
+    if (!name || !frequency) return;
+
+    let medications = JSON.parse(localStorage.getItem('medications')) || [];
+    medications.push({
+      id: Date.now(),
+      name: name,
+      dosage: dosage,
+      frequency: frequency,
+      reason: reason,
+      date: new Date().toLocaleDateString()
+    });
+    localStorage.setItem('medications', JSON.stringify(medications));
+
+    document.getElementById('medicationName').value = '';
+    document.getElementById('medicationDosage').value = '';
+    document.getElementById('medicationFrequency').value = '';
+    document.getElementById('medicationReason').value = '';
+    renderMedications();
+    renderDashboard();
+    showAlert();
+  }
+
+  function removeMedication(id) {
+    let medications = JSON.parse(localStorage.getItem('medications')) || [];
+    medications = medications.filter(m => m.id !== id);
+    localStorage.setItem('medications', JSON.stringify(medications));
+    renderMedications();
+    renderDashboard();
+  }
+
+  function renderMedications() {
+    const medications = JSON.parse(localStorage.getItem('medications')) || [];
+    const list = document.getElementById('medicationList');
+    list.innerHTML = '';
+
+    if (medications.length === 0) {
+      list.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 1rem;">No medications added yet</p>';
+      return;
+    }
+
+    medications.forEach(med => {
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.innerHTML = `
+        <div class="item-info">
+          <h4>💊 ${med.name}</h4>
+          <p>${med.dosage} - ${med.frequency} ${med.reason ? `| ${med.reason}` : ''}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn-small" onclick="removeMedication(${med.id})">Remove</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  // ── MEDICAL HISTORY ──
+  function addHistoryItem(e) {
+    e.preventDefault();
+    const type = document.getElementById('historyType').value;
+    const date = document.getElementById('historyDate').value;
+    const description = document.getElementById('historyDescription').value.trim();
+
+    if (!type || !date) return;
+
+    let history = JSON.parse(localStorage.getItem('medicalHistory')) || [];
+    history.push({
+      id: Date.now(),
+      type: type,
+      date: date,
+      description: description
+    });
+    localStorage.setItem('medicalHistory', JSON.stringify(history));
+
+    document.getElementById('historyType').value = '';
+    document.getElementById('historyDate').value = '';
+    document.getElementById('historyDescription').value = '';
+    renderHistory();
+    renderDashboard();
+    showAlert();
+  }
+
+  function removeHistory(id) {
+    let history = JSON.parse(localStorage.getItem('medicalHistory')) || [];
+    history = history.filter(h => h.id !== id);
+    localStorage.setItem('medicalHistory', JSON.stringify(history));
+    renderHistory();
+    renderDashboard();
+  }
+
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('medicalHistory')) || [];
+    const list = document.getElementById('historyList');
+    list.innerHTML = '';
+
+    if (history.length === 0) {
+      list.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 1rem;">No medical history added yet</p>';
+      return;
+    }
+
+    history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    history.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.innerHTML = `
+        <div class="item-info">
+          <h4>📋 ${item.type}</h4>
+          <p>${new Date(item.date).toLocaleDateString()} ${item.description ? `| ${item.description}` : ''}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn-small" onclick="removeHistory(${item.id})">Remove</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  // ── TAB SWITCHING ──
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ── LOAD ALL DATA ──
+  function loadAllData() {
+    const basicInfo = JSON.parse(localStorage.getItem('basicInfo')) || {};
+    const metrics = JSON.parse(localStorage.getItem('physicalMetrics')) || {};
+
+    if (basicInfo.fullName) document.getElementById('fullName').value = basicInfo.fullName;
+    if (basicInfo.age) document.getElementById('age').value = basicInfo.age;
+    if (basicInfo.gender) document.getElementById('gender').value = basicInfo.gender;
+    if (basicInfo.email) document.getElementById('email').value = basicInfo.email;
+
+    if (metrics.weight) document.getElementById('weight').value = metrics.weight;
+    if (metrics.height) document.getElementById('height').value = metrics.height;
+    if (metrics.bloodType) document.getElementById('bloodType').value = metrics.bloodType;
+    if (metrics.bloodPressure) document.getElementById('bloodPressure').value = metrics.bloodPressure;
+
+    calculateBMI();
+    renderChronicConditions();
+    renderMedications();
+    renderHistory();
+    renderDashboard();
+  }
+
+  // ── RENDER DASHBOARD ──
+  function renderDashboard() {
+    const basicInfo = JSON.parse(localStorage.getItem('basicInfo')) || {};
+    const metrics = JSON.parse(localStorage.getItem('physicalMetrics')) || {};
+    const conditions = JSON.parse(localStorage.getItem('chronicConditions')) || [];
+    const medications = JSON.parse(localStorage.getItem('medications')) || [];
+    const history = JSON.parse(localStorage.getItem('medicalHistory')) || [];
+
+    const dashboardContent = document.getElementById('dashboardContent');
+
+    // If no data, show empty state
+    if (!basicInfo.fullName && !metrics.weight) {
+      dashboardContent.innerHTML = `
+        <div class="empty-state">
+          <p>👋 Start by filling out your basic information below to see your health summary</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Calculate BMI for display
+    let bmiDisplay = 'N/A';
+    let bmiColor = 'var(--muted)';
+    if (metrics.weight && metrics.height) {
+      const bmi = (metrics.weight / ((metrics.height / 100) * (metrics.height / 100))).toFixed(1);
+      bmiDisplay = bmi;
+    }
+
+    // Build dashboard HTML
+    let html = `
+      <div class="dashboard-content">
+        <div class="dashboard-stat">
+          <div class="stat-label">🏋️ Weight</div>
+          <div class="stat-value">${metrics.weight || '—'}</div>
+          <div class="stat-unit">kilograms</div>
+        </div>
+        <div class="dashboard-stat">
+          <div class="stat-label">📏 Height</div>
+          <div class="stat-value">${metrics.height || '—'}</div>
+          <div class="stat-unit">centimeters</div>
+        </div>
+        <div class="dashboard-stat">
+          <div class="stat-label">⚖️ BMI</div>
+          <div class="stat-value">${bmiDisplay}</div>
+          <div class="stat-unit">${bmiDisplay !== 'N/A' ? 'Weight Status' : 'Add metrics'}</div>
+        </div>
+      </div>
+
+      <div class="dashboard-info-grid">
+        ${basicInfo.fullName ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Full Name</h4>
+              <p>${basicInfo.fullName}</p>
+            </div>
+            <div class="info-item-icon">👤</div>
+          </div>
+        ` : ''}
+        ${basicInfo.age ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Age</h4>
+              <p>${basicInfo.age} years</p>
+            </div>
+            <div class="info-item-icon">🎂</div>
+          </div>
+        ` : ''}
+        ${basicInfo.gender ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Gender</h4>
+              <p>${basicInfo.gender}</p>
+            </div>
+            <div class="info-item-icon">👥</div>
+          </div>
+        ` : ''}
+        ${basicInfo.email ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Email</h4>
+              <p>${basicInfo.email}</p>
+            </div>
+            <div class="info-item-icon">✉️</div>
+          </div>
+        ` : ''}
+        ${metrics.bloodType ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Blood Type</h4>
+              <p>${metrics.bloodType}</p>
+            </div>
+            <div class="info-item-icon">🩸</div>
+          </div>
+        ` : ''}
+        ${metrics.bloodPressure ? `
+          <div class="info-item">
+            <div class="info-item-left">
+              <h4>Blood Pressure</h4>
+              <p>${metrics.bloodPressure}</p>
+            </div>
+            <div class="info-item-icon">❤️</div>
+          </div>
+        ` : ''}
+      </div>
+
+      ${conditions.length > 0 || medications.length > 0 || history.length > 0 ? `
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(37,99,235,0.2);">
+          <h4 style="font-family: 'Syne', sans-serif; color: var(--sky); margin-bottom: 1rem; font-size: 1.05rem;">Medical Information Summary</h4>
+          <div class="dashboard-content">
+            ${conditions.length > 0 ? `
+              <div class="dashboard-stat">
+                <div class="stat-label">🏥 Chronic Conditions</div>
+                <div class="stat-value">${conditions.length}</div>
+                <div class="stat-unit">conditions</div>
+              </div>
+            ` : ''}
+            ${medications.length > 0 ? `
+              <div class="dashboard-stat">
+                <div class="stat-label">💊 Medications</div>
+                <div class="stat-value">${medications.length}</div>
+                <div class="stat-unit">medicines</div>
+              </div>
+            ` : ''}
+            ${history.length > 0 ? `
+              <div class="dashboard-stat">
+                <div class="stat-label">📋 Medical History</div>
+                <div class="stat-value">${history.length}</div>
+                <div class="stat-unit">records</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      ` : ''}
+    `;
+
+    dashboardContent.innerHTML = html;
+  }
+
+  // ── SHOW ALERT ──
+  function showAlert() {
+    showNotification('success', '✓ Success', 'Your profile has been updated successfully!');
+  }
+
+  // ── EXPORT DATA ──
+  function exportData() {
+    const allData = {
+      basicInfo: JSON.parse(localStorage.getItem('basicInfo')) || {},
+      physicalMetrics: JSON.parse(localStorage.getItem('physicalMetrics')) || {},
+      chronicConditions: JSON.parse(localStorage.getItem('chronicConditions')) || [],
+      medications: JSON.parse(localStorage.getItem('medications')) || [],
+      medicalHistory: JSON.parse(localStorage.getItem('medicalHistory')) || [],
+      exportDate: new Date().toISOString()
+    };
+
+    const json = JSON.stringify(allData, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SHMA_Health_Profile_${new Date().toLocaleDateString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>

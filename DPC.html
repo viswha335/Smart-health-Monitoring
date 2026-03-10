@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DPC - Data Processing Component Security</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%2338bdf8'>D</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #050e2d;
+      --deep: #0a1a4e;
+      --royal: #1338be;
+      --blue: #2563eb;
+      --sky: #38bdf8;
+      --cyan: #06d6f0;
+      --mint: #00f5c4;
+      --white: #f8faff;
+      --soft: #e8f0fe;
+      --muted: #94a3b8;
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.12);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0,245,196,0.1) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    section, nav, footer { position: relative; z-index: 1; }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 5%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(5,14,45,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: background .3s;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--sky), var(--mint));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .875rem;
+      font-weight: 500;
+      transition: color .2s;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-links a:hover { color: var(--sky); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--royal), var(--blue));
+      color: var(--white) !important;
+      padding: .45rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600 !important;
+    }
+
+    section { padding: 90px 5%; }
+
+    .section-tag {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: .8rem;
+    }
+
+    h1, h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--sky) 0%, var(--cyan) 50%, var(--mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+
+    .section-desc {
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      font-size: 1.05rem;
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      backdrop-filter: blur(10px);
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56,189,248,0.3);
+      box-shadow: 0 12px 40px rgba(37,99,235,0.15);
+    }
+
+    .card-icon {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      background: rgba(56,189,248,0.12);
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .card p { font-size: .9rem; color: var(--muted); line-height: 1.65; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+
+    .section-divider {
+      width: 60px; height: 3px;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      margin-bottom: 1.5rem;
+    }
+
+    .hero { min-height: 80vh; display: flex; align-items: center; padding-top: 100px; }
+
+    .section-alt {
+      background: linear-gradient(180deg, rgba(19,56,190,0.08) 0%, transparent 100%);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    footer {
+      background: rgba(5,14,45,0.95);
+      border-top: 1px solid var(--glass-border);
+      padding: 40px 5% 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #4ade80;
+      padding: .5rem 1.2rem;
+      border-radius: 100px;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .security-badge::before {
+      content: '🔒';
+      font-size: 1rem;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo"> DPC </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#security">Security Purpose</a></li>
+    <li><a href="#encryption">Encryption</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#processing">Processing</a></li>
+    <li><a href="bob.html">Main Platform</a></li>
+  </ul>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero reveal">
+  <div>
+    <div class="security-badge">Secure Data Processing Component</div>
+    <h1>DPC Security<br><span>— Data Protection</span></h1>
+    <p class="section-desc">Enterprise-grade security protocols for sensitive health data processing. End-to-end encryption, compliance standards, and zero-trust architecture.</p>
+  </div>
+</section>
+
+<!-- SECURITY PURPOSE -->
+<section id="security" class="section-alt">
+  <div class="section-tag">Core Purpose</div>
+  <div class="section-divider"></div>
+  <h2>Security Purpose & Objectives</h2>
+  <p class="section-desc">The Data Processing Component (DPC) implements comprehensive security measures to protect sensitive health information throughout the processing pipeline.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">🛡️</div>
+      <h3>Data Confidentiality</h3>
+      <p>All personal health information is encrypted at rest and in transit using AES-256 encryption. Data is never stored in plaintext format, ensuring sensitive health metrics remain confidential.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔐</div>
+      <h3>Access Control</h3>
+      <p>Role-based access control (RBAC) restricts data access to authorized personnel only. Multi-factor authentication required for all administrative operations on health data.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📋</div>
+      <h3>Regulatory Compliance</h3>
+      <p>Compliant with HIPAA, GDPR, and CCPA regulations. Maintains audit trails of all data access and modifications. Regular compliance audits and certifications upheld.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔍</div>
+      <h3>Data Integrity</h3>
+      <p>Cryptographic hashing validates data integrity during processing. Real-time anomaly detection identifies unauthorized modifications or tampering attempts immediately.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">⚠️</div>
+      <h3>Threat Detection</h3>
+      <p>Advanced intrusion detection systems monitor for suspicious activity. Machine learning algorithms identify anomalous data patterns and potential security breaches.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔄</div>
+      <h3>Secure Data Lifecycle</h3>
+      <p>Automated data retention policies ensure health records are securely deleted after retention periods. Cryptographic key rotation every 90 days maintains encryption strength.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ENCRYPTION LAYER -->
+<section id="encryption">
+  <div class="section-tag">Encryption Standards</div>
+  <div class="section-divider"></div>
+  <h2>Data Encryption & Protection</h2>
+  <p class="section-desc">Multi-layered encryption protecting data at every stage of the processing pipeline.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">🔐</div>
+      <h3>In-Transit Encryption</h3>
+      <p>TLS 1.3 protocol encrypts all data transmission. Perfect forward secrecy ensures session keys cannot be compromised. Certificate pinning prevents man-in-the-middle attacks.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">💾</div>
+      <h3>At-Rest Encryption</h3>
+      <p>AES-256-GCM encryption for database records. Each user's data encrypted with unique derived keys. Hardware security modules store master encryption keys.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🎯</div>
+      <h3>End-to-End Encryption</h3>
+      <p>Asymmetric encryption (RSA-4096) for key exchange. Symmetric encryption (AES-256) for bulk data. Users maintain exclusive control of encryption keys.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🔑</div>
+      <h3>Key Management</h3>
+      <p>Automated key rotation policies. Keys stored in isolated secure modules. Access logs track all key usage. Multi-person authorization for key operations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY CONTROLS -->
+<section id="privacy" class="section-alt">
+  <div class="section-tag">Privacy Standards</div>
+  <div class="section-divider"></div>
+  <h2>Privacy & User Control</h2>
+  <p class="section-desc">Users maintain complete control over their health data with granular privacy settings.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">👤</div>
+      <h3>User Consent Framework</h3>
+      <p>Explicit opt-in consent required before data processing. Users can revoke consent anytime. Consent preferences logged and tracked. Transparent consent language in plain English.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🚫</div>
+      <h3>Right to Deletion</h3>
+      <p>Complete data erasure on user request within 30 days. Secure deletion ensures data cannot be recovered. Deletion verified and certified to user.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">📊</div>
+      <h3>Data Minimization</h3>
+      <p>Only essential data collected and processed. Automatic deletion of processed logs after 90 days. Anonymization techniques applied to non-essential attributes.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">👁️</div>
+      <h3>Transparency & Access</h3>
+      <p>Users can download their complete health data. Real-time audit logs show who accessed data and when. Monthly privacy reports provided to users.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DATA PROCESSING SECURITY -->
+<section id="processing">
+  <div class="section-tag">Processing Security</div>
+  <div class="section-divider"></div>
+  <h2>Secure Processing Pipeline</h2>
+  <p class="section-desc">Health data security maintained throughout the four-stage processing pipeline.</p>
+
+  <div class="grid-2">
+    <div class="card reveal">
+      <div class="card-icon">✅</div>
+      <h3>Validation Stage</h3>
+      <p>Cryptographic signatures verify data origin. Checksums detect transmission errors. Schema validation prevents injection attacks. Rate limiting prevents API abuse.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">🧹</div>
+      <h3>Cleaning Stage</h3>
+      <p>Automated sanitization removes malicious payloads. De-identification techniques applied to sensitive attributes. Quality checks ensure data integrity throughout processing.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">➕</div>
+      <h3>Enrichment Stage</h3>
+      <p>Federated learning processes data privately. No raw data shared between systems. Differential privacy adds mathematical guarantees against re-identification.</p>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-icon">⚖️</div>
+      <h3>Normalization Stage</h3>
+      <p>Secure computation techniques preserve privacy. Encrypted data processed directly without decryption. Output data validated before delivery to AI models.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 VIS - Data Processing Component. Enterprise Security Standards Maintained. <a href="bob.html" style="color: var(--sky); text-decoration: none;">Back to Main Platform</a></p>
+</footer>
+
+<script>
+  // Scroll reveal animation
+  const reveals = document.querySelectorAll('.reveal');
+  reveals.forEach(el => el.classList.add('visible'));
+</script>
+</body>
+</html>
